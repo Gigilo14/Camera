@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Access</title>
+</head>
+<body>
+    <video id="video" playsinline autoplay></video>
+    <button id="switchCamera">Switch Camera</button>
+
+<script>
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Browser supports the MediaStream API
+} else {
+    alert('Sorry, your browser does not support camera access. Please update or use a different browser.');
+}
+
+let currentFacingMode = 'user'; // 'user' for front camera, 'environment' for rear camera
+
+function startCamera(facingMode) {
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facingMode }
+    })
+    .then(function(stream) {
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+    })
+    .catch(function(error) {
+        console.log("Error accessing the camera: ", error);
+    });
+}
+
+startCamera(currentFacingMode);
+
+document.getElementById('switchCamera').addEventListener('click', function() {
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    // Stop all video streams before switching
+    const video = document.getElementById('video');
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    startCamera(currentFacingMode);
+});
+
+</script>
+</body>
+</html>
